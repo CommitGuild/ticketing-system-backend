@@ -1,0 +1,67 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-py"
+  recursive_type_depth = 5
+  interface = "asyncio"
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  name          String
+  createdProjects Project[] @relation("ProjectCreator")
+  assignedTickets Ticket[]  @relation("TicketAssignee")
+  collaboratedTickets Ticket[] @relation("TicketCollaborators")
+  createdTickets Ticket[]  @relation("TicketCreator")
+}
+
+model Project {
+  id            Int       @id @default(autoincrement())
+  name          String
+  description   String
+  createdById   Int
+  createdBy     User      @relation("ProjectCreator", fields: [createdById], references: [id])
+  swimLanes     SwimLane[]
+}
+
+model SwimLane {
+  id            Int      @id @default(autoincrement())
+  name          String
+  projectId     Int
+  project       Project  @relation(fields: [projectId], references: [id])
+  tickets       Ticket[]
+}
+
+model TicketType {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  description   String
+  tickets       Ticket[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Ticket {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String
+  
+  // Relationships
+  swimLaneId    Int
+  swimLane      SwimLane @relation(fields: [swimLaneId], references: [id])
+  
+  typeId        Int
+  type          TicketType @relation(fields: [typeId], references: [id])
+  
+  assigneeId    Int
+  assignee      User     @relation("TicketAssignee", fields: [assigneeId], references: [id])
+  
+  collaboratorId Int
+  collaborator  User     @relation("TicketCollaborators", fields: [collaboratorId], references: [id])
+  
+  createdById   Int
+  createdBy     User     @relation("TicketCreator", fields: [createdById], references: [id])
+}
