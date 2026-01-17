@@ -30,3 +30,39 @@ async def get_ticket_type(ticket_type_id: int, db: Prisma = Depends(get_db)):
     if not ticket_type:
         raise HTTPException(status_code=404, detail="Ticket type not found")
     return ticket_type
+
+
+@router.put("/{ticket_type_id}", response_model=TicketTypeRead)
+async def update_ticket_type(
+    ticket_type_id: int,
+    ticket_type_in: TicketTypeCreate,
+    db: Prisma = Depends(get_db),
+):
+    ticket_type = await db.tickettype.find_unique(where={"id": ticket_type_id})
+    if not ticket_type:
+        raise HTTPException(status_code=404, detail="Ticket type not found")
+    try:
+        updated = await db.tickettype.update(
+            where={"id": ticket_type_id},
+            data=ticket_type_in.model_dump(exclude_unset=True),
+        )
+        return updated
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.delete("/{ticket_type_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_ticket_type(ticket_type_id: int, db: Prisma = Depends(get_db)):
+    ticket_type = await db.tickettype.find_unique(where={"id": ticket_type_id})
+    if not ticket_type:
+        raise HTTPException(status_code=404, detail="Ticket type not found")
+    try:
+        await db.tickettype.delete(where={"id": ticket_type_id})
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.get("/", response_model=list[TicketTypeRead])
+async def get_ticket_types(db: Prisma = Depends(get_db)):
+    ticket_types = await db.tickettype.find_many()
+    return ticket_types
