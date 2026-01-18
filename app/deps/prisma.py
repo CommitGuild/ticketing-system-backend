@@ -1,9 +1,5 @@
-"""
-Setup dependencies for the app
-"""
-
 from prisma import Prisma
-from app.database import db
+from app.db.prisma import db
 
 
 def get_db() -> Prisma:
