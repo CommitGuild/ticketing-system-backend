@@ -18,5 +18,4 @@ RUN uv sync --frozen --no-dev
 COPY prisma ./prisma
 RUN uv run prisma generate
 
-COPY . .
-CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uv run prisma generate && uv run prisma migrate deploy && uv run uvicorn main:app --host 0.0.0.0 --port 8000"]
