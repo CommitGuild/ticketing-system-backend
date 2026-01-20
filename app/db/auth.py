@@ -5,7 +5,7 @@ from app.config.settings import settings
 
 
 engine = create_async_engine(
-    settings.DATABASE_URL,  # e.g. postgresql+asyncpg://...
+    settings.async_database_url,  # e.g. postgresql+asyncpg://...
     echo=False,
     future=True,
 )

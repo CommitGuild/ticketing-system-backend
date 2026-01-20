@@ -15,6 +15,11 @@ class Settings(BaseSettings):
         ..., env="DATABASE_URL"
     )  # your postgres url for both Prisma & SQLAlchemy
 
+    @property
+    def async_database_url(self) -> str:
+        """Convert DATABASE_URL to async format for SQLAlchemy"""
+        return self.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
+
     # OAuth providers (optional = None if not set)
     GOOGLE_CLIENT_ID: str | None = None
     GOOGLE_CLIENT_SECRET: str | None = None
