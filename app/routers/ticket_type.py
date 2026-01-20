@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from prisma import Prisma
 from app.schemas.ticket_type import TicketTypeCreate, TicketTypeRead
-from app.dependencies import get_db
+from app.deps.prisma import get_db
 
 router = APIRouter()
 
